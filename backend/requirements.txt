@@ -1,0 +1,11 @@
+fastapi
+uvicorn
+sqlalchemy
+pydantic
+python-dotenv
+passlib[bcrypt]
+python-jose
+psycopg2-binary
+scikit-learn
+torch
+numpy
