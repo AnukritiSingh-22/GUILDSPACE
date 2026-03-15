@@ -7,7 +7,7 @@ from app.routes import user_routes, project_routes, application_routes, ai_route
 
 Base.metadata.create_all(bind=engine)
 
-app = FastAPI(title="GILDSPACE API")
+app = FastAPI(title="GUILDSPACE API")
 
 app.add_middleware(
     CORSMiddleware,
@@ -24,4 +24,4 @@ app.include_router(ai_routes.router)
 
 @app.get("/")
 def root():
-    return {"message": "GILDSPACE backend running"}
+    return {"message": "GUILDSPACE backend running"}
