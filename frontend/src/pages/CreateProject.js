@@ -1,7 +1,7 @@
 // src/pages/CreateProject.js
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { createPost } from "../api/api";
+import { createProject } from "../api/api";
 
 const DOMAINS = ["Research", "Tech / Dev", "Design", "Science", "Social / NGO"];
 
@@ -18,7 +18,7 @@ export default function CreateProject() {
 
   const handleSubmit = async () => {
     setLoading(true);
-    await createPost(form);
+    await createProject(form);
     setLoading(false);
     setDone(true);
   };

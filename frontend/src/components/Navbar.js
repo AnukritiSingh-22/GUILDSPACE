@@ -4,19 +4,31 @@ import { useAuth } from "../context/AuthContext";
 import TrustBadge from "./TrustBadge";
 
 export default function Navbar() {
-  const navigate = useNavigate();
-  const location = useLocation();
-  const { user } = useAuth();
+  const navigate  = useNavigate();
+  const location  = useLocation();
+  const { user, logout } = useAuth();
 
   const navLinks = [
-    { path: "/",        label: "Feed" },
-    { path: "/profile", label: "My Profile" },
-    { path: "/my-posts",label: "My Posts" },
+    { path: "/",         label: "Feed"       },
+    { path: "/profile",  label: "My Profile" },
+    { path: "/my-posts", label: "My Posts"   },
   ];
 
   const isActive = (path) => {
     if (path === "/") return location.pathname === "/";
     return location.pathname.startsWith(path);
+  };
+
+  // ── Safe helpers — the API returns user.profile.full_name ─────────────────
+  // Support both shapes: { profile: { full_name } } and { full_name }
+  const fullName   = user?.profile?.full_name || user?.full_name || "User";
+  const initials   = user?.profile?.initials  || user?.initials  || fullName.slice(0, 2).toUpperCase();
+  const trustScore = user?.profile?.trust_score ?? user?.trust ?? "1.0";
+  const firstName  = fullName.split(" ")[0];
+
+  const handleLogout = () => {
+    logout();
+    navigate("/login");
   };
 
   return (
@@ -40,7 +52,7 @@ export default function Navbar() {
       </nav>
 
       {/* Right side */}
-      <div className="flex items-center gap-12">
+      <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
         <button
           className="btn btn-primary btn-sm"
           onClick={() => navigate("/create")}
@@ -49,30 +61,40 @@ export default function Navbar() {
         </button>
 
         {user && (
-          <div
-            className="flex items-center gap-8"
-            style={{ cursor: "pointer" }}
-            onClick={() => navigate("/profile")}
-          >
-            {/* Avatar */}
+          <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+            {/* Avatar + name — click to go to profile */}
             <div
-              className="avatar"
-              style={{
-                width: 32, height: 32,
-                background: "rgba(124,58,237,0.2)",
-                border: "1.5px solid rgba(124,58,237,0.4)",
-                fontSize: 12,
-                color: "var(--accent-mid)",
-              }}
+              style={{ display: "flex", alignItems: "center", gap: 8, cursor: "pointer" }}
+              onClick={() => navigate("/profile")}
             >
-              {user.initials}
-            </div>
-            <div>
-              <div style={{ fontSize: 12, fontWeight: 500, color: "var(--text-primary)" }}>
-                {user.name.split(" ")[0]}
+              <div
+                className="avatar"
+                style={{
+                  width: 32, height: 32,
+                  background: "rgba(124,58,237,0.2)",
+                  border: "1.5px solid rgba(124,58,237,0.4)",
+                  fontSize: 12,
+                  color: "var(--accent-mid)",
+                }}
+              >
+                {initials}
               </div>
-              <TrustBadge value={user.trust} />
+              <div>
+                <div style={{ fontSize: 12, fontWeight: 500, color: "var(--text-primary)" }}>
+                  {firstName}
+                </div>
+                <TrustBadge value={trustScore} />
+              </div>
             </div>
+
+            {/* Logout button */}
+            <button
+              className="btn btn-ghost btn-sm"
+              onClick={handleLogout}
+              style={{ fontSize: 11, padding: "4px 10px" }}
+            >
+              Logout
+            </button>
           </div>
         )}
       </div>

@@ -2,40 +2,61 @@
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import "./App.css";
 import { AuthProvider, useAuth } from "./context/AuthContext";
-import Navbar from "./components/Navbar";
-import Home from "./pages/Home";
-import ProjectDetails from "./pages/ProjectDetails";
-import Profile from "./pages/Profile";
-import Applications from "./pages/Applications";
-import CreateProject from "./pages/CreateProject";
-import Login from "./pages/Login";
+import Navbar          from "./components/Navbar";
+import Home            from "./pages/Home";
+import ProjectDetails  from "./pages/ProjectDetails";
+import Profile         from "./pages/Profile";
+import Applications    from "./pages/Applications";
+import CreateProject   from "./pages/CreateProject";
+import Login           from "./pages/Login";
 
-// Protected route wrapper
+// ── Shows nothing while the auth check is in-flight ──────────────────────────
+function LoadingScreen() {
+  return (
+    <div style={{
+      minHeight: "100vh", display: "flex", alignItems: "center",
+      justifyContent: "center", background: "var(--bg)",
+    }}>
+      <div style={{ fontSize: 14, color: "var(--text-hint)" }}>Loading…</div>
+    </div>
+  );
+}
+
+// ── Redirects to /login if not authenticated ──────────────────────────────────
 function Protected({ children }) {
-  const { isLoggedIn } = useAuth();
+  const { isLoggedIn, loading } = useAuth();
+  if (loading) return <LoadingScreen />;
   return isLoggedIn ? children : <Navigate to="/login" replace />;
 }
 
-function AppLayout() {
-  const { isLoggedIn } = useAuth();
+// ── Redirects to / if already authenticated ───────────────────────────────────
+function PublicOnly({ children }) {
+  const { isLoggedIn, loading } = useAuth();
+  if (loading) return <LoadingScreen />;
+  return !isLoggedIn ? children : <Navigate to="/" replace />;
+}
+
+function AppRoutes() {
   return (
     <BrowserRouter>
       <Routes>
-        {/* Public */}
-        <Route path="/login" element={<Login />} />
+        {/* Public — only accessible when NOT logged in */}
+        <Route path="/login" element={
+          <PublicOnly><Login /></PublicOnly>
+        } />
 
-        {/* Protected — with navbar */}
+        {/* Protected — require auth, show Navbar */}
         <Route path="/*" element={
           <Protected>
             <div style={{ minHeight: "100vh", background: "var(--bg)" }}>
               <Navbar />
               <Routes>
-                <Route path="/"               element={<Home />} />
-                <Route path="/project/:id"    element={<ProjectDetails />} />
-                <Route path="/profile"        element={<Profile />} />
-                <Route path="/my-posts"       element={<Applications />} />
-                <Route path="/create"         element={<CreateProject />} />
-                <Route path="*"              element={<Navigate to="/" replace />} />
+                <Route path="/"            element={<Home />} />
+                <Route path="/project/:id" element={<ProjectDetails />} />
+                <Route path="/profile"     element={<Profile />} />
+                <Route path="/my-posts"    element={<Applications />} />
+                <Route path="/create"      element={<CreateProject />} />
+                <Route path="*"            element={<Navigate to="/" replace />} />
               </Routes>
             </div>
           </Protected>
@@ -48,7 +69,7 @@ function AppLayout() {
 export default function App() {
   return (
     <AuthProvider>
-      <AppLayout />
+      <AppRoutes />
     </AuthProvider>
   );
 }
