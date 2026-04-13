@@ -6,9 +6,13 @@ import Navbar          from "./components/Navbar";
 import Home            from "./pages/Home";
 import ProjectDetails  from "./pages/ProjectDetails";
 import Profile         from "./pages/Profile";
+import PublicProfile   from "./pages/PublicProfile";
 import Applications    from "./pages/Applications";
 import CreateProject   from "./pages/CreateProject";
 import Login           from "./pages/Login";
+import SearchPage      from "./pages/SearchPage";
+import Messages        from "./pages/Messages";
+import Notifications   from "./pages/Notifications";
 
 // ── Shows nothing while the auth check is in-flight ──────────────────────────
 function LoadingScreen() {
@@ -54,8 +58,14 @@ function AppRoutes() {
                 <Route path="/"            element={<Home />} />
                 <Route path="/project/:id" element={<ProjectDetails />} />
                 <Route path="/profile"     element={<Profile />} />
+                <Route path="/user/:userId" element={<PublicProfile />} />
+                <Route path="/search"      element={<SearchPage />} />
+                <Route path="/notifications" element={<Notifications />} />
+                <Route path="/messages"    element={<Messages />} />
+                <Route path="/messages/:conversationId" element={<Messages />} />
                 <Route path="/my-posts"    element={<Applications />} />
                 <Route path="/create"      element={<CreateProject />} />
+                <Route path="/edit-project/:id" element={<CreateProject />} />
                 <Route path="*"            element={<Navigate to="/" replace />} />
               </Routes>
             </div>

@@ -16,7 +16,6 @@ from app.database.db import Base
 
 class ApplicationStatusEnum(str, enum.Enum):
     pending     = "pending"
-    shortlisted = "shortlisted"
     accepted    = "accepted"
     rejected    = "rejected"
 
@@ -35,6 +34,7 @@ class Application(Base):
                           default=ApplicationStatusEnum.pending, nullable=False)
     ai_fit_score = Column(SmallInteger)        # 0–100, set by AI service
     link         = Column(Text)                # optional portfolio link
+    rating       = Column(SmallInteger, nullable=True) # 1-5 user rating
 
     created_at   = Column(DateTime, default=datetime.utcnow)
     updated_at   = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)

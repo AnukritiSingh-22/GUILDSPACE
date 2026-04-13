@@ -224,3 +224,82 @@ def delete_project(
         raise HTTPException(status_code=403, detail="Not your project")
     db.delete(project)
     db.commit()
+
+
+# ─────────────────────────────────────────────────────────────────────────────
+# PUT /api/projects/{project_id}/hide  (creator only)
+# ─────────────────────────────────────────────────────────────────────────────
+@router.put("/{project_id}/hide")
+def hide_project(
+    project_id:   UUID,
+    current_user: User    = Depends(get_current_user),
+    db:           Session = Depends(get_db),
+):
+    project = db.query(Project).filter(Project.id == project_id).first()
+    if not project:
+        raise HTTPException(status_code=404, detail="Project not found")
+    if str(project.creator_id) != str(current_user.id):
+        raise HTTPException(status_code=403, detail="Not your project")
+
+    project.status = "hidden"
+    db.commit()
+    return {"success": True, "status": "hidden"}
+
+
+# ─────────────────────────────────────────────────────────────────────────────
+# PUT /api/projects/{project_id}/unhide  (creator only)
+# ─────────────────────────────────────────────────────────────────────────────
+@router.put("/{project_id}/unhide")
+def unhide_project(
+    project_id:   UUID,
+    current_user: User    = Depends(get_current_user),
+    db:           Session = Depends(get_db),
+):
+    project = db.query(Project).filter(Project.id == project_id).first()
+    if not project:
+        raise HTTPException(status_code=404, detail="Project not found")
+    if str(project.creator_id) != str(current_user.id):
+        raise HTTPException(status_code=403, detail="Not your project")
+
+    project.status = "open"
+    db.commit()
+    return {"success": True, "status": "open"}
+
+# ─────────────────────────────────────────────────────────────────────────────
+# PUT /api/projects/{project_id}/close  (creator only)
+# ─────────────────────────────────────────────────────────────────────────────
+@router.put("/{project_id}/close")
+def close_project(
+    project_id:   UUID,
+    current_user: User    = Depends(get_current_user),
+    db:           Session = Depends(get_db),
+):
+    project = db.query(Project).filter(Project.id == project_id).first()
+    if not project:
+        raise HTTPException(status_code=404, detail="Project not found")
+    if str(project.creator_id) != str(current_user.id):
+        raise HTTPException(status_code=403, detail="Not your project")
+
+    project.status = "closed"
+    db.commit()
+    return {"success": True, "status": "closed"}
+
+
+# ─────────────────────────────────────────────────────────────────────────────
+# PUT /api/projects/{project_id}/complete  (creator only)
+# ─────────────────────────────────────────────────────────────────────────────
+@router.put("/{project_id}/complete")
+def complete_project(
+    project_id:   UUID,
+    current_user: User    = Depends(get_current_user),
+    db:           Session = Depends(get_db),
+):
+    project = db.query(Project).filter(Project.id == project_id).first()
+    if not project:
+        raise HTTPException(status_code=404, detail="Project not found")
+    if str(project.creator_id) != str(current_user.id):
+        raise HTTPException(status_code=403, detail="Not your project")
+
+    project.status = "completed"
+    db.commit()
+    return {"success": True, "status": "completed"}

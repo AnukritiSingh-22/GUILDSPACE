@@ -37,6 +37,8 @@ class ProjectOut(BaseModel):
     questions:   List[QuestionOut] = []
     applicant_count: int = 0
     time_ago:    str = ""
+    poster_name: str = ""
+    poster_initials: str = ""
     created_at:  datetime
     model_config = {"from_attributes": True}
 

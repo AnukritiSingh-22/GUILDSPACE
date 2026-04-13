@@ -30,6 +30,7 @@ class ApplicantOut(BaseModel):
     ai_fit_score:   Optional[int]
     status:         str
     link:           Optional[str]
+    rating:         Optional[int] = None
     applied_at:     datetime
     model_config = {"from_attributes": True}
 
@@ -44,5 +45,9 @@ class MyApplicationOut(BaseModel):
     project_title:  str
     project_domain: str
     status:         str
+    rating:         Optional[int] = None
     applied_at:     datetime
     model_config = {"from_attributes": True}
+
+class ApplicationRateUpdate(BaseModel):
+    rating: int # 1 to 5

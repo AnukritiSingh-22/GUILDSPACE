@@ -32,6 +32,7 @@ class ProjectStatusEnum(str, enum.Enum):
     in_progress = "in_progress"
     completed   = "completed"
     closed      = "closed"
+    hidden      = "hidden"
 
 
 class Project(Base):

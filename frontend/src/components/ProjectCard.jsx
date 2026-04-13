@@ -4,33 +4,60 @@ import SkillTag from "./SkillTag";
 export default function ProjectCard({ project }) {
   const { title, status, domain, tags, rating, trustGain, collab, duration } = project;
   const isCompleted = status === "Completed";
+  const roundedRating = rating ? Math.round(rating) : 0;
 
   return (
     <div className="proj-card">
-      <div className="flex items-center justify-between mb-8">
-        <div className="proj-card-title" style={{ flex: 1, marginRight: 10 }}>{title}</div>
-        <span className={`badge ${isCompleted ? "badge-success" : "badge-warning"}`}
-          style={{ flexShrink: 0 }}>
+      <header className="proj-card-header">
+        <div className="proj-card-heading">
+          <div className="proj-card-eyebrow">Project</div>
+          <div className="proj-card-title">{title}</div>
+        </div>
+        <span
+          className={`badge ${isCompleted ? "badge-success" : "badge-warning"} proj-card-status`}
+        >
           {status}
         </span>
-      </div>
+      </header>
 
-      <div className="text-sm text-sec mb-8">
-        With {collab} · {duration} ·{" "}
-        <span className="badge badge-neutral" style={{ fontSize: 10, padding: "1px 7px" }}>{domain}</span>
-      </div>
-
-      <div className="flex items-center justify-between">
-        <div className="flex gap-4" style={{ flexWrap: "wrap" }}>
-          {tags.map(t => <SkillTag key={t}>{t}</SkillTag>)}
+      <div className="proj-card-body">
+        <div className="proj-card-meta">
+          <span>With {collab}</span>
+          <span>{duration}</span>
+          <span className="badge badge-neutral proj-card-domain">{domain}</span>
         </div>
+
+        <div className="proj-card-tags">
+          {tags.map((t) => (
+            <SkillTag key={t}>{t}</SkillTag>
+          ))}
+        </div>
+      </div>
+
+      <div className="proj-card-divider" />
+
+      <footer className="proj-card-footer">
+        <div className="proj-card-stat">
+          <span className="proj-card-stat-label">Collaboration</span>
+          <span className="proj-card-stat-value">{collab}</span>
+        </div>
+
+        <div className="proj-card-stat">
+          <span className="proj-card-stat-label">Timeline</span>
+          <span className="proj-card-stat-value">{duration}</span>
+        </div>
+
         {rating && (
-          <div className="flex items-center gap-6 text-sm text-sec">
-            <span style={{ color: "var(--warning)" }}>{"★".repeat(Math.round(rating))}</span>
-            <span>{rating} · <span style={{ color: "var(--success)" }}>+{trustGain} trust</span></span>
+          <div className="proj-card-stat proj-card-stat-highlight">
+            <span className="proj-card-stat-label">Rating</span>
+            <span className="proj-card-stat-value">
+              <span className="proj-card-rating-stars">{"★".repeat(roundedRating)}</span>
+              <span>{rating}</span>
+              <span className="proj-card-trust">+{trustGain} trust</span>
+            </span>
           </div>
         )}
-      </div>
+      </footer>
     </div>
   );
 }

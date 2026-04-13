@@ -13,3 +13,6 @@ from app.models.skill import Skill, UserSkill, ProjectSkill  # noqa: F401
 from app.models.project import Project, ProjectQuestion       # noqa: F401
 from app.models.application import Application, ApplicationAnswer  # noqa: F401
 from app.models.trust import TrustEvent  # noqa: F401
+from app.models.follow import Follow  # noqa
+from app.models.notification import Notification  # noqa
+from app.models.message import Message  # noqa

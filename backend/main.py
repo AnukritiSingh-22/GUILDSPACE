@@ -1,5 +1,3 @@
-# main.py
-# ─────────────────────────────────────────────────────────────────────────────
 # GuildSpace FastAPI application entry point.
 # Run with:  uvicorn main:app --reload
 # ─────────────────────────────────────────────────────────────────────────────
@@ -17,6 +15,10 @@ from app.routes.user_routes        import router as user_router
 from app.routes.project_routes     import router as project_router
 from app.routes.application_routes import router as application_router
 from app.routes.ai_routes          import router as ai_router
+from app.routes.follow_routes      import router as follow_router
+from app.routes.search_routes      import router as search_router
+from app.routes.notification_routes import router as notification_router
+from app.routes.message_routes     import router as message_router
 
 # ── Create tables (dev only — use Alembic in production) ─────────────────────
 Base.metadata.create_all(bind=engine)
@@ -45,6 +47,10 @@ app.include_router(user_router,        prefix="/api",  tags=["auth", "users"])
 app.include_router(project_router)                                              # prefix set inside file
 app.include_router(application_router)                                          # prefix set inside file
 app.include_router(ai_router)                                                   # prefix set inside file
+app.include_router(follow_router)
+app.include_router(search_router)
+app.include_router(notification_router)
+app.include_router(message_router)
 
 # ── Health check ──────────────────────────────────────────────────────────────
 @app.get("/api/health", tags=["health"])

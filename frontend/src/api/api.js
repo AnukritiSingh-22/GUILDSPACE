@@ -178,6 +178,13 @@ export async function updateApplicationStatus(applicationId, status) {
   });
 }
 
+export async function rateCollaborator(applicationId, rating) {
+  return request(`/api/applications/${applicationId}/rate`, {
+    method: "PUT",
+    body:   JSON.stringify({ rating }),
+  });
+}
+
 /** DELETE /api/applications/:id — withdraw application */
 export async function withdrawApplication(applicationId) {
   return request(`/api/applications/${applicationId}`, { method: "DELETE" });
@@ -198,4 +205,91 @@ export async function fetchAiFeed({ domain, max_diff } = {}) {
 /** GET /api/ai/skills — all skill names for autocomplete */
 export async function fetchAllSkills() {
   return request("/api/ai/skills");
+}
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// PUBLIC PROFILES
+// ═══════════════════════════════════════════════════════════════════════════════
+
+export async function fetchPublicProfile(userId) {
+  return request(`/api/users/${userId}/public`);
+}
+
+export async function fetchIsFollowing(userId) {
+  return request(`/api/users/${userId}/is-following`);
+}
+
+export async function followUser(userId) {
+  return request(`/api/users/${userId}/follow`, { method: "POST" });
+}
+
+export async function unfollowUser(userId) {
+  return request(`/api/users/${userId}/follow`, { method: "DELETE" });
+}
+
+export async function fetchFollowers(userId) {
+  return request(`/api/users/${userId}/followers`);
+}
+
+export async function fetchFollowing(userId) {
+  return request(`/api/users/${userId}/following`);
+}
+
+export async function fetchUserProjects(userId) {
+  return request(`/api/projects?creator_id=${userId}`);
+}
+
+// ── Search ───────────────────────────────────────────────────────
+export async function searchUsers(query) {
+  return request(`/api/search/users?q=${encodeURIComponent(query)}`);
+}
+
+export async function searchProjects(query) {
+  return request(`/api/search/projects?q=${encodeURIComponent(query)}`);
+}
+
+// ── Messaging ────────────────────────────────────────────────────
+export async function fetchConversations() {
+  return request('/api/messages/conversations');
+}
+
+export async function fetchMessages(conversationId) {
+  return request(`/api/messages/${conversationId}`);
+}
+
+export async function sendMessage(recipientId, content) {
+  return request('/api/messages', {
+    method: 'POST',
+    body: JSON.stringify({ recipient_id: recipientId, content }),
+  });
+}
+
+// ── Notifications ────────────────────────────────────────────────
+export async function fetchNotifications() {
+  return request('/api/notifications');
+}
+
+export async function markNotificationRead(notificationId) {
+  return request(`/api/notifications/${notificationId}/read`, { method: 'PUT' });
+}
+
+export async function markAllNotificationsRead() {
+  return request('/api/notifications/read-all', { method: 'PUT' });
+}
+
+// ── Post management ──────────────────────────────────────────────
+export async function hideProject(projectId) {
+  return request(`/api/projects/${projectId}/hide`, { method: 'PUT' });
+}
+
+export async function unhideProject(projectId) {
+  return request(`/api/projects/${projectId}/unhide`, { method: 'PUT' });
+}
+
+export async function closeProject(projectId) {
+  return request(`/api/projects/${projectId}/close`, { method: 'PUT' });
+}
+
+export async function completeProject(projectId) {
+  return request(`/api/projects/${projectId}/complete`, { method: 'PUT' });
 }

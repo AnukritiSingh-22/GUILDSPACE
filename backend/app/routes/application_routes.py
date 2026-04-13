@@ -19,10 +19,13 @@ from app.models.application import Application, ApplicationAnswer
 from app.models.skill import Skill, UserSkill
 from app.models.trust import TrustEvent
 from app.models.profile import Profile
+from app.models.notification import Notification
 from app.schemas.application import (
     ApplicationCreate, ApplicantOut,
     ApplicationStatusUpdate, MyApplicationOut,
+    ApplicationRateUpdate
 )
+from app.services.email_service import send_collaborator_email
 from app.middleware.auth_middleware import get_current_user
 from app.services.ranking_service import compute_fit_score
 from app.utils.helpers import compute_trust_level
@@ -109,6 +112,19 @@ def apply_to_project(
 
     db.commit()
     db.refresh(application)
+
+    applicant_profile = current_user.profile
+    notification = Notification(
+        user_id = project.creator_id,
+        type = "new_application",
+        title = f"{applicant_profile.full_name} applied to your project",
+        body = f'"{project.title[:60]}"',
+        link = f"/my-posts?project={str(project.id)}",
+        actor_id = current_user.id
+    )
+    db.add(notification)
+    db.commit()
+
     return {"success": True, "application_id": str(application.id), "ai_fit_score": fit_score}
 
 
@@ -196,6 +212,7 @@ def get_applicants(
             "ai_fit_score":   app.ai_fit_score,
             "status":         app.status.value if hasattr(app.status, "value") else app.status,
             "link":           app.link,
+            "rating":         app.rating,
             "applied_at":     app.created_at,
         })
     return result
@@ -220,7 +237,7 @@ def update_application_status(
     if str(project.creator_id) != str(current_user.id):
         raise HTTPException(status_code=403, detail="Only the project creator can update status")
 
-    allowed = {"shortlisted", "accepted", "rejected", "pending"}
+    allowed = {"accepted", "rejected", "pending"}
     if payload.status not in allowed:
         raise HTTPException(status_code=400, detail=f"Status must be one of {allowed}")
 
@@ -243,8 +260,74 @@ def update_application_status(
                 reason     = f"Accepted for: {project.title[:60]}",
             ))
 
+    # Send Notification and Email
+    if payload.status != old_status:
+        notification_body = ""
+        if payload.status == "accepted":
+            notification_body = f"Congratulations! You were accepted for '{project.title}'. Please send your contact details in my DM."
+            send_collaborator_email(app.applicant.email if app.applicant else "unknown@mail.com", project.title)
+        elif payload.status == "rejected":
+            notification_body = f"Unfortunately, you were not selected for '{project.title}'."
+        
+        if notification_body:
+            db.add(Notification(
+                user_id  = app.applicant_id,
+                type     = "application_update",
+                title    = f"Application {payload.status.capitalize()}",
+                body     = notification_body,
+                link     = f"/project/{project.id}",
+                actor_id = current_user.id
+            ))
+
     db.commit()
     return {"success": True, "status": payload.status}
+
+# ─────────────────────────────────────────────────────────────────────────────
+# PUT /api/applications/{application_id}/rate
+# Creator rates an accepted collaborator
+# ─────────────────────────────────────────────────────────────────────────────
+@router.put("/{application_id}/rate")
+def rate_collaborator(
+    application_id: UUID,
+    payload:        ApplicationRateUpdate,
+    current_user:   User    = Depends(get_current_user),
+    db:             Session = Depends(get_db),
+):
+    app = db.query(Application).filter(Application.id == application_id).first()
+    if not app:
+        raise HTTPException(status_code=404, detail="Application not found")
+
+    project = app.project
+    if str(project.creator_id) != str(current_user.id):
+        raise HTTPException(status_code=403, detail="Only the project creator can rate collaborators")
+
+    if app.status != "accepted":
+        raise HTTPException(status_code=400, detail="Can only rate accepted collaborators")
+
+    if payload.rating < 1 or payload.rating > 5:
+        raise HTTPException(status_code=400, detail="Rating must be between 1 and 5")
+
+    app.rating = payload.rating
+    
+    # Weighted delta based on rating score:
+    # 5 star: +1.0, 4 star: +0.5, 3 star: 0, 2 star: -0.5, 1 star: -1.0
+    weight_map = {5: 1.0, 4: 0.5, 3: 0.0, 2: -0.5, 1: -1.0}
+    trust_delta = weight_map[payload.rating]
+
+    profile = app.applicant.profile
+    if profile:
+        profile.trust_score = max(1.0, min(10.0, float(profile.trust_score) + trust_delta))
+        profile.trust_level = compute_trust_level(float(profile.trust_score))
+        db.add(TrustEvent(
+            user_id    = app.applicant_id,
+            project_id = project.id,
+            event_type = "collaborator_rating",
+            delta      = trust_delta,
+            reason     = f"Rated {payload.rating} stars for: {project.title[:40]}",
+        ))
+
+    db.commit()
+    return {"success": True, "rating": app.rating, "new_trust_score": float(profile.trust_score) if profile else None}
 
 
 # ─────────────────────────────────────────────────────────────────────────────
