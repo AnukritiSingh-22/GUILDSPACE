@@ -77,3 +77,4 @@ def mark_all_read(db: Session = Depends(get_db), current_user: User = Depends(ge
 def get_unread_count(db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
     count = db.query(Notification).filter(Notification.user_id == current_user.id, Notification.is_read == False).count()
     return {"count": count}
+

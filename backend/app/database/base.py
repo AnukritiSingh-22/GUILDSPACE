@@ -16,3 +16,4 @@ from app.models.trust import TrustEvent  # noqa: F401
 from app.models.follow import Follow  # noqa
 from app.models.notification import Notification  # noqa
 from app.models.message import Message  # noqa
+from app.models.rating import Rating  # noqa

@@ -79,6 +79,7 @@ def ai_feed(
 
         result.append({
             "id":               str(p.id),
+            "creator_id":       str(p.creator_id),
             "title":            p.title,
             "description":      p.description,
             "domain":           p.domain.value if hasattr(p.domain, "value") else p.domain,
@@ -106,3 +107,55 @@ def ai_feed(
 def all_skills(db: Session = Depends(get_db)):
     skills = db.query(Skill).order_by(Skill.name).all()
     return [{"id": s.id, "name": s.name} for s in skills]
+
+# ─────────────────────────────────────────────────────────────────────────────
+# POST /api/ai/insight
+# Generate AI insights using Groq
+# ─────────────────────────────────────────────────────────────────────────────
+
+from pydantic import BaseModel
+import httpx
+import os
+
+
+class AIRequest(BaseModel):
+    prompt: str
+
+
+@router.post("/insight")
+async def ai_insight(
+    payload: AIRequest,
+    current_user: User = Depends(get_current_user),
+):
+    try:
+        async with httpx.AsyncClient() as client:
+            res = await client.post(
+                "https://api.groq.com/openai/v1/chat/completions",
+                headers={
+                    "Authorization": f"Bearer {os.getenv('GROQ_API_KEY')}",
+                    "Content-Type": "application/json",
+                },
+                json={
+                    "model": "llama-3.3-70b-versatile",
+                    "messages": [
+                        {
+                            "role": "user",
+                            "content": payload.prompt
+                        }
+                    ],
+                    "temperature": 0.7,
+                },
+                timeout=30.0,
+            )
+
+            data = res.json()
+            if res.status_code != 200:
+                err_msg = data.get("error", {}).get("message", "Unknown API error")
+                return {"text": f"API Error: {err_msg}"}
+
+            return {
+                "text": data["choices"][0]["message"]["content"]
+            }
+
+    except Exception as e:
+        return {"text": f"Error generating insight: {str(e)}"}

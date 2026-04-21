@@ -137,7 +137,7 @@ export default function SearchPage() {
               <div 
                 key={user.user_id} 
                 className="card card-clickable" 
-                style={{ background: "#141414", display: "flex", alignItems: "center", justifyContent: "space-between", padding: 20 }}
+                style={{ background: "var(--bg-card)", display: "flex", alignItems: "center", justifyContent: "space-between", padding: 20 }}
                 onClick={() => navigate(`/user/${user.user_id}`)}
               >
                 <div style={{ display: "flex", alignItems: "center", gap: 16 }}>
@@ -175,7 +175,7 @@ export default function SearchPage() {
               <div 
                 key={proj.id} 
                 className="card card-clickable" 
-                style={{ background: "#141414", padding: 20 }}
+                style={{ background: "var(--bg-card)", padding: 20 }}
                 onClick={() => navigate(`/project/${proj.id}`)}
               >
                 <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 12 }}>

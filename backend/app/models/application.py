@@ -59,3 +59,4 @@ class ApplicationAnswer(Base):
     answer         = Column(Text, nullable=False)
 
     application = relationship("Application", back_populates="answers")
+    question    = relationship("ProjectQuestion")

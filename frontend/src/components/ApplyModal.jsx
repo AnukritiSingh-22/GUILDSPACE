@@ -11,7 +11,7 @@ function DiffBar({ value }) {
       {Array.from({ length: 10 }).map((_, i) => (
         <div key={i} style={{ 
           width: 6, height: 6, borderRadius: 1, 
-          background: i < value ? "linear-gradient(135deg, #7B5EA7, #9B6FD4)" : "rgba(255,255,255,0.1)" 
+          background: i < value ? "linear-gradient(135deg, #7B5EA7, #9B6FD4)" : "var(--border-mid)" 
         }} />
       ))}
     </div>
@@ -30,14 +30,14 @@ function StepIndicator({ steps, current }) {
               width: 24, height: 24, borderRadius: "50%", display: "flex", alignItems: "center", justifyItems: "center", justifyContent: "center",
               fontSize: 12, fontWeight: 600,
               background: state === "done" ? "#10B981" : state === "active" ? "linear-gradient(135deg, #7B5EA7, #9B6FD4)" : "#222222",
-              color: state === "pending" ? "#A0A0A0" : "#fff"
+              color: state === "pending" ? "var(--text-sec)" : "#fff"
             }}>
               {state === "done" ? "✓" : i + 1}
             </div>
-            <span style={{ fontSize: 13, color: state === "active" ? "#9B6FD4" : "#A0A0A0", fontWeight: state === "active" ? 600 : 500 }}>
+            <span style={{ fontSize: 13, color: state === "active" ? "#9B6FD4" : "var(--text-sec)", fontWeight: state === "active" ? 600 : 500 }}>
               {label}
             </span>
-            {i < steps.length - 1 && <div style={{ width: 40, height: 1, background: "rgba(255,255,255,0.08)", margin: "0 8px" }} />}
+            {i < steps.length - 1 && <div style={{ width: 40, height: 1, background: "var(--border)", margin: "0 8px" }} />}
           </div>
         );
       })}
@@ -119,7 +119,7 @@ export default function ApplyModal({ post, onBack, onSubmit }) {
   };
 
   const navBtnGhost = {
-    background: "transparent", color: "var(--text-sec)", border: "1px solid rgba(255,255,255,0.15)", borderRadius: 12,
+    background: "transparent", color: "var(--text-sec)", border: "1px solid var(--border-bright)", borderRadius: 12,
     padding: "10px 20px", fontSize: 13, cursor: "pointer", fontWeight: 500
   };
   const navBtnGradient = {
@@ -136,25 +136,25 @@ export default function ApplyModal({ post, onBack, onSubmit }) {
   // One-click apply
   if (applyType === "oneclick" || applyType === "one_click") {
     return (
-      <div style={{ minHeight: "calc(100vh - 56px)", background: "#0D0D0D", display: "flex", alignItems: "center", justifyContent: "center" }}>
-        <div style={{ width: "100%", maxWidth: 440, background: "#141414", borderRadius: 20, padding: 32, border: "1px solid rgba(255,255,255,0.08)", textAlign: "center" }}>
-          <h2 style={{ fontFamily: "var(--font-display)", fontSize: 24, fontWeight: 700, color: "#fff", marginBottom: 12 }}>One-click Apply</h2>
+      <div style={{ minHeight: "calc(100vh - 56px)", background: "var(--bg)", display: "flex", alignItems: "center", justifyContent: "center" }}>
+        <div style={{ width: "100%", maxWidth: 440, background: "var(--bg-card)", borderRadius: 20, padding: 32, border: "1px solid var(--border)", textAlign: "center" }}>
+          <h2 style={{ fontFamily: "var(--font-display)", fontSize: 24, fontWeight: 700, color: "var(--text-primary)", marginBottom: 12 }}>One-click Apply</h2>
           <p style={{ fontSize: 13, color: "var(--text-sec)", marginBottom: 28, lineHeight: 1.7 }}>
-            Your profile and skill tags will be shared with <strong style={{ color: "#fff" }}>{post.poster_name ? post.poster_name.split(' ')[0] : 'the poster'}</strong> instantly. No questions required.
+            Your profile and skill tags will be shared with <strong style={{ color: "var(--text-primary)" }}>{post.poster_name ? post.poster_name.split(' ')[0] : 'the poster'}</strong> instantly. No questions required.
           </p>
 
           {errorBanner}
 
-          <div style={{ background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.06)", borderRadius: 16, padding: "16px", marginBottom: 32, display: "flex", alignItems: "center", gap: 16, textAlign: "left" }}>
+          <div style={{ background: "rgba(255,255,255,0.03)", border: "1px solid var(--border)", borderRadius: 16, padding: "16px", marginBottom: 32, display: "flex", alignItems: "center", gap: 16, textAlign: "left" }}>
             <div className="avatar" style={{
               width: 50, height: 50, fontSize: 18, background: "var(--bg)", backgroundClip: "padding-box",
-              border: "3px solid transparent", backgroundImage: "linear-gradient(#141414, #141414), linear-gradient(135deg, #7B5EA7, #9B6FD4)",
-              backgroundOrigin: "border-box", color: "#fff", flexShrink: 0
+              border: "3px solid transparent", backgroundImage: "linear-gradient(var(--bg-card), var(--bg-card)), linear-gradient(135deg, #7B5EA7, #9B6FD4)",
+              backgroundOrigin: "border-box", color: "var(--text-primary)", flexShrink: 0
             }}>
               {initials}
             </div>
             <div>
-              <div style={{ fontSize: 15, fontWeight: 600, color: "#fff" }}>{fullName}</div>
+              <div style={{ fontSize: 15, fontWeight: 600, color: "var(--text-primary)" }}>{fullName}</div>
               <div style={{ display: "flex", gap: 8, marginTop: 8 }}>
                 <TrustBadge value={trustScore} />
               </div>
@@ -176,15 +176,15 @@ export default function ApplyModal({ post, onBack, onSubmit }) {
   const STEPS = ["Your profile", "Application", "Review"];
 
   return (
-    <div style={{ minHeight: "calc(100vh - 56px)", background: "#0D0D0D" }}>
+    <div style={{ minHeight: "calc(100vh - 56px)", background: "var(--bg)" }}>
       <style>{`
         .question-input {
           width: 100%;
-          background: #141414;
-          border: 1px solid rgba(255,255,255,0.08);
+          background: var(--bg-card);
+          border: 1px solid var(--border);
           border-radius: 12px;
           padding: 12px 14px;
-          color: #fff;
+          color: var(--text-primary);
           font-family: var(--font-body);
           font-size: 13px;
           outline: none;
@@ -212,20 +212,20 @@ export default function ApplyModal({ post, onBack, onSubmit }) {
             {/* Step 1: Profile confirm */}
             {step === 1 && (
               <div>
-                <h3 style={{ fontFamily: "var(--font-display)", fontSize: 24, fontWeight: 700, color: "#fff", marginBottom: 8 }}>Confirm your profile</h3>
+                <h3 style={{ fontFamily: "var(--font-display)", fontSize: 24, fontWeight: 700, color: "var(--text-primary)", marginBottom: 8 }}>Confirm your profile</h3>
                 <p style={{ fontSize: 13, color: "var(--text-sec)", marginBottom: 24 }}>This will be shared with {post.poster_name ? post.poster_name.split(' ')[0] : 'the poster'}.</p>
 
-                <div style={{ background: "#141414", border: "1px solid rgba(255,255,255,0.08)", borderRadius: 16, padding: 24 }}>
-                  <div style={{ display: "flex", gap: 16, paddingBottom: 20, borderBottom: "1px solid rgba(255,255,255,0.06)", marginBottom: 20 }}>
+                <div style={{ background: "var(--bg-card)", border: "1px solid var(--border)", borderRadius: 16, padding: 24 }}>
+                  <div style={{ display: "flex", gap: 16, paddingBottom: 20, borderBottom: "1px solid var(--border)", marginBottom: 20 }}>
                     <div className="avatar" style={{
                       width: 56, height: 56, fontSize: 20, background: "var(--bg)", backgroundClip: "padding-box",
-                      border: "3px solid transparent", backgroundImage: "linear-gradient(#141414, #141414), linear-gradient(135deg, #7B5EA7, #9B6FD4)",
-                      backgroundOrigin: "border-box", color: "#fff", flexShrink: 0
+                      border: "3px solid transparent", backgroundImage: "linear-gradient(var(--bg-card), var(--bg-card)), linear-gradient(135deg, #7B5EA7, #9B6FD4)",
+                      backgroundOrigin: "border-box", color: "var(--text-primary)", flexShrink: 0
                     }}>
                       {initials}
                     </div>
                     <div>
-                      <div style={{ fontSize: 16, fontWeight: 600, color: "#fff" }}>{fullName}</div>
+                      <div style={{ fontSize: 16, fontWeight: 600, color: "var(--text-primary)" }}>{fullName}</div>
                       <div style={{ fontSize: 13, color: "var(--text-sec)", margin: "4px 0" }}>{role} · {city}</div>
                       <div style={{ display: "flex", gap: 8, marginTop: 10 }}>
                         <TrustBadge value={trustScore} />
@@ -256,7 +256,7 @@ export default function ApplyModal({ post, onBack, onSubmit }) {
             {/* Step 2: Questions */}
             {step === 2 && (
               <div>
-                <h3 style={{ fontFamily: "var(--font-display)", fontSize: 24, fontWeight: 700, color: "#fff", marginBottom: 8 }}>Answer the questions</h3>
+                <h3 style={{ fontFamily: "var(--font-display)", fontSize: 24, fontWeight: 700, color: "var(--text-primary)", marginBottom: 8 }}>Answer the questions</h3>
                 <p style={{ fontSize: 13, color: "var(--text-sec)", marginBottom: 24 }}>
                   {post.poster_name ? post.poster_name.split(' ')[0] : 'The poster'} wants to know:
                 </p>
@@ -303,23 +303,23 @@ export default function ApplyModal({ post, onBack, onSubmit }) {
             {/* Step 3: Review */}
             {step === 3 && (
               <div>
-                <h3 style={{ fontFamily: "var(--font-display)", fontSize: 24, fontWeight: 700, color: "#fff", marginBottom: 8 }}>Review your application</h3>
+                <h3 style={{ fontFamily: "var(--font-display)", fontSize: 24, fontWeight: 700, color: "var(--text-primary)", marginBottom: 8 }}>Review your application</h3>
                 <p style={{ fontSize: 13, color: "var(--text-sec)", marginBottom: 24 }}>Everything look good?</p>
 
                 {post.questions?.map((q, i) => {
                   const qId = q.id || q.question_id || i;
                   const qText = q.question || q.question_text || q.text || (typeof q === 'string' ? q : `Question ${i + 1}`);
                   return (
-                    <div key={qId} style={{ background: "#141414", border: "1px solid rgba(255,255,255,0.06)", borderRadius: 12, padding: 20, marginBottom: 16 }}>
+                    <div key={qId} style={{ background: "var(--bg-card)", border: "1px solid var(--border)", borderRadius: 12, padding: 20, marginBottom: 16 }}>
                       <div style={{ fontSize: 13, fontWeight: 600, color: "var(--text-sec)", marginBottom: 8 }}>{qText}</div>
-                      <div style={{ fontSize: 14, color: "#fff", lineHeight: 1.6 }}>
+                      <div style={{ fontSize: 14, color: "var(--text-primary)", lineHeight: 1.6 }}>
                         {answers[qId] || <em style={{ color: "var(--text-hint)" }}>Not answered</em>}
                       </div>
                     </div>
                   );
                 })}
 
-                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginTop: 32, paddingTop: 24, borderTop: "1px solid rgba(255,255,255,0.06)" }}>
+                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginTop: 32, paddingTop: 24, borderTop: "1px solid var(--border)" }}>
                   <div style={{ fontSize: 13, fontWeight: 500, color: "#10B981", display: "flex", alignItems: "center", gap: 6 }}>
                     ✓ Trust {trustScore} meets minimum {post.minTrust || post.min_trust || 'requirements'}
                   </div>
@@ -336,16 +336,16 @@ export default function ApplyModal({ post, onBack, onSubmit }) {
 
           {/* Sidebar */}
           <div>
-            <div style={{ background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.06)", borderRadius: 12, padding: 20, marginBottom: 24 }}>
-              <div style={{ fontSize: 14, fontWeight: 600, color: "#fff", marginBottom: 8, lineHeight: 1.4 }}>{post.title}</div>
+            <div style={{ background: "rgba(255,255,255,0.03)", border: "1px solid var(--border)", borderRadius: 12, padding: 20, marginBottom: 24 }}>
+              <div style={{ fontSize: 14, fontWeight: 600, color: "var(--text-primary)", marginBottom: 8, lineHeight: 1.4 }}>{post.title}</div>
               <div style={{ fontSize: 12, color: "var(--text-sec)", marginBottom: 16 }}>Posted by {post.poster_name ? post.poster_name.split(' ')[0] : 'Unknown'}</div>
               <div style={{ display: "flex", flexWrap: "wrap", gap: 6, marginBottom: 20 }}>
-                {(post.tags || post.skills || [])?.map(t => <span key={t} style={{ background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.1)", color: "var(--text-sec)", borderRadius: 6, padding: "2px 8px", fontSize: 11 }}>{t}</span>)}
+                {(post.tags || post.skills || [])?.map(t => <span key={t} style={{ background: "rgba(255,255,255,0.05)", border: "1px solid var(--border-mid)", color: "var(--text-sec)", borderRadius: 6, padding: "2px 8px", fontSize: 11 }}>{t}</span>)}
               </div>
               <div style={{ display: "flex", alignItems: "center", gap: 12, fontSize: 12, color: "var(--text-sec)" }}>
                 Difficulty
                 <DiffBar value={post.difficulty || 1} />
-                <span style={{ fontWeight: 600, color: "#fff" }}>{post.difficulty || 1}/10</span>
+                <span style={{ fontWeight: 600, color: "var(--text-primary)" }}>{post.difficulty || 1}/10</span>
               </div>
             </div>
 

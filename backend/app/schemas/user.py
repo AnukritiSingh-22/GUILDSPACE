@@ -26,6 +26,7 @@ class ProfileOut(BaseModel):
     portfolio_url: Optional[str]
     trust_score:   float
     trust_level:   int
+    avatar_url:    Optional[str] = None
     model_config = {"from_attributes": True}
 
 
@@ -39,6 +40,7 @@ class ProfileUpdate(BaseModel):
     github_url:    Optional[str] = None
     arxiv_url:     Optional[str] = None
     portfolio_url: Optional[str] = None
+    avatar_url:    Optional[str] = None
 
 
 class MeResponse(BaseModel):

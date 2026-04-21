@@ -43,7 +43,7 @@ function getIconForType(type) {
       );
     default:
       return (
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#A0A0A0" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--text-sec)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
           <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path>
           <path d="M13.73 21a2 2 0 0 1-3.46 0"></path>
         </svg>
@@ -76,6 +76,7 @@ export default function Notifications() {
     try {
       await markAllNotificationsRead();
       await loadNotifs();
+      window.dispatchEvent(new CustomEvent("notificationsRead"));
     } catch (err) {
       console.error("Error marking all read:", err);
     }
@@ -85,7 +86,13 @@ export default function Notifications() {
     if (!notif.is_read) {
       try {
         await markNotificationRead(notif.id);
-        setNotifications(prev => prev.map(n => n.id === notif.id ? { ...n, is_read: true } : n));
+        setNotifications(prev => {
+          const next = prev.map(n => n.id === notif.id ? { ...n, is_read: true } : n);
+          if (!next.some(n => !n.is_read)) {
+            window.dispatchEvent(new CustomEvent("notificationsRead"));
+          }
+          return next;
+        });
       } catch (e) {
         console.error("Error marking read:", e);
       }
@@ -96,22 +103,22 @@ export default function Notifications() {
   };
 
   return (
-    <div style={{ minHeight: "calc(100vh - 56px)", background: "#0D0D0D", padding: "40px 0" }}>
+    <div style={{ minHeight: "calc(100vh - 56px)", background: "var(--bg)", padding: "40px 0" }}>
       <div style={{ maxWidth: 680, margin: "0 auto", padding: "0 24px" }}>
         
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 32 }}>
-          <h1 style={{ fontFamily: "var(--font-display)", fontWeight: 700, fontSize: 28, color: "#fff" }}>
+          <h1 style={{ fontFamily: "var(--font-display)", fontWeight: 700, fontSize: 28, color: "var(--text-primary)" }}>
             Notifications
           </h1>
           {notifications.some(n => !n.is_read) && (
             <button 
               onClick={handleMarkAllRead}
               style={{
-                background: "transparent", color: "var(--text-sec)", border: "1px solid rgba(255,255,255,0.15)",
+                background: "transparent", color: "var(--text-sec)", border: "1px solid var(--border-bright)",
                 borderRadius: 12, padding: "8px 16px", fontSize: 13, fontWeight: 500, cursor: "pointer",
                 transition: "0.2s"
               }}
-              onMouseEnter={(e) => Object.assign(e.target.style, { color: "#fff", background: "rgba(255,255,255,0.05)" })}
+              onMouseEnter={(e) => Object.assign(e.target.style, { color: "var(--text-primary)", background: "rgba(255,255,255,0.05)" })}
               onMouseLeave={(e) => Object.assign(e.target.style, { color: "var(--text-sec)", background: "transparent" })}
             >
               Mark all read
@@ -122,7 +129,7 @@ export default function Notifications() {
         {loading ? (
           <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
             {[1, 2, 3].map(i => (
-              <div key={i} className="card" style={{ height: 86, background: "#141414", borderColor: "transparent", animation: "pulse 1.5s infinite" }} />
+              <div key={i} className="card" style={{ height: 86, background: "var(--bg-card)", borderColor: "transparent", animation: "pulse 1.5s infinite" }} />
             ))}
           </div>
         ) : notifications.length === 0 ? (
@@ -145,9 +152,9 @@ export default function Notifications() {
                   onClick={() => handleCardClick(n)}
                   style={{
                     position: "relative",
-                    background: isUnread ? "rgba(123,94,167,0.06)" : "#141414",
-                    border: "1px solid rgba(255,255,255,0.06)",
-                    borderLeft: isUnread ? "2px solid #9B6FD4" : "1px solid rgba(255,255,255,0.06)",
+                    background: isUnread ? "rgba(123,94,167,0.06)" : "var(--bg-card)",
+                    border: "1px solid var(--border)",
+                    borderLeft: isUnread ? "2px solid #9B6FD4" : "1px solid var(--border)",
                     borderRadius: 12,
                     padding: 20,
                     paddingLeft: isUnread ? 20 : 21, 
@@ -158,16 +165,16 @@ export default function Notifications() {
                     transition: "0.2s"
                   }}
                   onMouseEnter={(e) => n.link && Object.assign(e.currentTarget.style, {
-                    border: "1px solid rgba(255,255,255,0.15)", 
-                    borderLeft: isUnread ? "2px solid #9B6FD4" : "1px solid rgba(255,255,255,0.15)"
+                    border: "1px solid var(--border-bright)", 
+                    borderLeft: isUnread ? "2px solid #9B6FD4" : "1px solid var(--border-bright)"
                   })}
                   onMouseLeave={(e) => n.link && Object.assign(e.currentTarget.style, {
-                    border: "1px solid rgba(255,255,255,0.06)", 
-                    borderLeft: isUnread ? "2px solid #9B6FD4" : "1px solid rgba(255,255,255,0.06)"
+                    border: "1px solid var(--border)", 
+                    borderLeft: isUnread ? "2px solid #9B6FD4" : "1px solid var(--border)"
                   })}
                 >
                   {isUnread && (
-                    <div style={{ position: "absolute", left: -5, top: "50%", transform: "translateY(-50%)", width: 8, height: 8, borderRadius: "50%", background: "#9B6FD4", border: "2px solid #0D0D0D" }} />
+                    <div style={{ position: "absolute", left: -5, top: "50%", transform: "translateY(-50%)", width: 8, height: 8, borderRadius: "50%", background: "#9B6FD4", border: "2px solid var(--bg)" }} />
                   )}
 
                   <div style={{ position: "relative" }}>
@@ -178,9 +185,9 @@ export default function Notifications() {
                       {n.actor_initials || "?"}
                     </div>
                     <div style={{
-                      position: "absolute", bottom: -6, right: -6, background: "#141414",
+                      position: "absolute", bottom: -6, right: -6, background: "var(--bg-card)",
                       borderRadius: "50%", padding: 2, display: "flex", alignItems: "center", justifyContent: "center",
-                      border: "2px solid #141414"
+                      border: "2px solid var(--bg-card)"
                     }}>
                       {getIconForType(n.type)}
                     </div>
@@ -188,7 +195,7 @@ export default function Notifications() {
 
                   <div style={{ flex: 1 }}>
                     <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 4 }}>
-                      <div style={{ fontSize: 14, color: "#fff", fontWeight: isUnread ? 600 : 400, lineHeight: 1.4 }}>
+                      <div style={{ fontSize: 14, color: "var(--text-primary)", fontWeight: isUnread ? 600 : 400, lineHeight: 1.4 }}>
                         {n.title}
                       </div>
                       <div style={{ fontSize: 12, color: "var(--text-hint)", whiteSpace: "nowrap", marginLeft: 16, marginTop: 2 }}>
@@ -210,3 +217,5 @@ export default function Notifications() {
     </div>
   );
 }
+
+

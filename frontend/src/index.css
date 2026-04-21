@@ -706,3 +706,244 @@ button { font-family: var(--font-body); cursor: pointer; border: none; outline: 
     display: none;
   }
 }
+
+/* ─── PART A & B Toggle / Mobile ─────────────────────────────────────────────── */
+[data-theme="light"] {
+  --bg: #f5f3ff;
+  --bg-card: #ffffff;
+  --bg-elevated: #ede8ff;
+  --bg-input: #f8f6ff;
+  --bg-hover: #e8e2ff;
+  --text-primary: #1a1a2e;
+  --text-sec: #4a4570;
+  --text-hint: #9090b0;
+  --border: rgba(100, 80, 160, 0.12);
+  --border-mid: rgba(100, 80, 160, 0.2);
+  --border-bright: rgba(100, 80, 160, 0.35);
+}
+
+.theme-toggle-btn {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  border: 1px solid var(--border);
+  background: transparent;
+  color: var(--text-primary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s;
+  font-size: 16px;
+}
+.theme-toggle-btn:hover {
+  background: var(--bg-hover);
+}
+
+.hamburger-btn {
+  display: none;
+  flex-direction: column;
+  gap: 4px;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  padding: 8px;
+}
+.hamburger-btn span {
+  display: block;
+  width: 20px;
+  height: 2px;
+  background: var(--text-primary);
+  border-radius: 2px;
+}
+
+.mobile-drawer {
+  position: fixed;
+  top: 0;
+  right: -280px;
+  width: 250px;
+  height: 100vh;
+  background: var(--bg-elevated);
+  border-left: 1px solid var(--border);
+  box-shadow: -10px 0 30px rgba(0,0,0,0.5);
+  z-index: 1000;
+  transition: right 0.3s ease;
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+.mobile-drawer.open {
+  right: 0;
+}
+
+@media (max-width: 768px) {
+  .topbar { padding: 0 14px; }
+  .navbar-nav-links, .navbar-search, .navbar-post-btn, .navbar-user-info { display: none !important; }
+  .hamburger-btn { display: flex; }
+  .feed-layout { grid-template-columns: 1fr; }
+  .sidebar-left, .sidebar-right { display: none; }
+  .feed-main { padding: 14px; max-height: none; }
+  .profile-layout { grid-template-columns: 1fr; }
+  .profile-left { border-right: none; border-bottom: 1px solid var(--border); }
+  .detail-grid, .apply-grid { grid-template-columns: 1fr; }
+  .poster-layout { grid-template-columns: 1fr; }
+}
+
+.profile-layout {
+  display: flex;
+  min-height: 100vh;
+}
+
+/* LEFT SIDE FIXED */
+.profile-left {
+  width: 300px;
+  min-width: 300px;
+  max-width: 300px;
+}
+
+/* RIGHT SIDE FLEXIBLE */
+.profile-right {
+  flex: 1;
+  padding: 24px 32px;
+  overflow-x: hidden;
+}
+
+@media (max-width: 900px) {
+  .profile-layout {
+    flex-direction: column;
+  }
+
+  @media (max-width: 768px) {
+  .profile-left {
+    width: 100%;
+    min-width: unset;
+  }
+}
+
+  .profile-right {
+    padding: 16px;
+  }
+}
+.responsive-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+}
+
+@media (max-width: 900px) {
+  .responsive-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+@media (max-width: 600px) {
+  .responsive-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 768px) {
+  .page-wrap,
+  .page-wrap-narrow {
+    padding: 16px;
+  }
+}
+
+.post-title,
+.post-desc {
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+}
+
+.post-footer {
+  flex-wrap: wrap;
+}
+
+.topbar {
+  flex-wrap: nowrap;
+}
+
+@media (max-width: 768px) {
+  .feed-main,
+  .sidebar-left,
+  .sidebar-right,
+  .poster-detail {
+    max-height: none;
+  }
+}
+
+/* 🔥 MOBILE FIX PACK */
+@media (max-width: 768px) {
+
+  .profile-left {
+    width: 100%;
+    min-width: unset;
+  }
+
+  .page-wrap,
+  .page-wrap-narrow {
+    padding: 16px;
+  }
+
+  .feed-main,
+  .poster-detail {
+    max-height: none;
+  }
+
+  .post-title,
+  .post-desc {
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+  }
+}
+
+/* GRID FIX */
+.responsive-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+}
+
+@media (max-width: 900px) {
+  .responsive-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 600px) {
+  .responsive-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* 🔥 FINAL THEME FIX PACK */
+
+[data-theme="light"] * {
+  color: var(--text-primary);
+}
+
+.topbar {
+  background: var(--bg-elevated);
+}
+
+.ai-box {
+  background: var(--bg-elevated);
+}
+
+.card,
+.proj-card,
+.detail-card,
+.sidebar-card {
+  color: var(--text-primary);
+}
+
+.btn-primary {
+  background: var(--accent);
+  color: white;
+}
+
+.btn-primary:hover {
+  background: var(--accent-mid);
+  color: white;
+}

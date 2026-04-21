@@ -1,4 +1,67 @@
+/* ===== DARK THEME (your original vibe preserved) ===== */
+body.dark {
+  --bg: #0b1120;
+  --bg-elevated: #111827;
+  --bg-card: #1a2333;
+
+  --text-primary: #e5e7eb;
+  --text-sec: #9ca3af;
+  --text-hint: #6b7280;
+
+  --border: rgba(255,255,255,0.08);
+
+  --accent: #9B6FD4;
+}
+
+/* ===== LIGHT THEME (SOFT, NOT WHITE) ===== */
+body.light {
+  --bg: #f1f5f9;           /* soft bluish gray */
+  --bg-elevated: #e2e8f0;
+  --bg-card: #ffffff;
+
+  --text-primary: #0f172a;
+  --text-sec: #475569;
+  --text-hint: #64748b;
+
+  --border: rgba(0,0,0,0.08);
+
+  --accent: #7c3aed;
+}
+
+/* GLOBAL */
 #root {
   min-height: 100vh;
   background: var(--bg);
+  color: var(--text-primary);
+  transition: all 0.3s ease;
 }
+
+.topbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 20px;
+  flex-wrap: wrap;
+}
+
+/* Mobile */
+@media (max-width: 768px) {
+  .topbar {
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+
+  .topbar nav {
+    display: none;
+  }
+
+  input {
+    width: 140px !important;
+  }
+}
+/* 
+#root {
+  min-height: 100vh;
+  background: var(--bg);
+  color: var(--text-primary);
+} */

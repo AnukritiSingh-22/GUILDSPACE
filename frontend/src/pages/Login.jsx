@@ -27,20 +27,44 @@ export default function Login() {
   });
 
   // ── Handlers ──────────────────────────────────────────────────────────────
-  const handleLogin = async (e) => {
+ const handleLogin = async (e) => {
     e.preventDefault();
+    if (loading) return;
+
     setError("");
     setLoading(true);
+
     try {
-      await login({ email: loginForm.email, password: loginForm.password });
+      await login({
+        email: loginForm.email,
+        password: loginForm.password,
+      });
+
       navigate("/");
     } catch (err) {
-      setError(err.message || "Login failed. Check your email and password.");
-    } finally {
-      setLoading(false);
-    }
-  };
+      console.error("Login error:", err);
 
+      const msg = err?.message?.toLowerCase() || "";
+
+      if (
+        msg.includes("401") ||
+        msg.includes("unauthorized") ||
+        msg.includes("invalid") ||
+        msg.includes("incorrect")
+      ) {
+        setError(" Incorrect email or password");
+      } else {
+        setError("Unable to login. Please try again.");
+      }
+
+      setLoginForm((prev) => ({ ...prev, password: "" }));
+
+      setLoading(false);
+      return;
+    }
+
+    setLoading(false);
+  };
   const handleSignup = async (e) => {
     e.preventDefault();
     setError("");
@@ -68,88 +92,80 @@ export default function Login() {
   };
 
   return (
-  <div style={{ display: "flex", minHeight: "100vh", background: "var(--bg)" }}>
+    <div style={{ display: "flex", minHeight: "100vh", background: "var(--bg)" }}>
 
-    {/* ── LEFT SIDE: Image + Branding ─────────────────────────── */}
-    <div
-      className="auth-left"
-      style={{
-        flex: 1,
-        position: "relative",
-        display: "flex",
-        flexDirection: "column",
-        justifyContent: "flex-end",   // push content to bottom
-        padding: "60px 8%",           // slightly tighter spacing
-        overflow: "hidden",
-      }}
-    >
-      {/* Background Image */}
+      {/* ── LEFT SIDE: Image + Branding ─────────────────────────── */}
       <div
+        className="auth-left"
         style={{
-          position: "absolute",
-          inset: 0,
-          backgroundImage: "url('/assets/Login_img.png')",
-          backgroundSize: "cover",
-          backgroundPosition: "center",
-          filter: "brightness(0.9)",   // 🔥 clearer image
-        }}
-      />
-
-      {/* Overlay */}
-      <div
-        style={{
-          position: "absolute",
-          inset: 0,
-          background: "rgba(10, 10, 20, 0.35)", // 🔥 lighter overlay
-        }}
-      />
-
-      {/* Content (BOTTOM LEFT) */}
-      <div
-        style={{
+          flex: 1,
           position: "relative",
-          zIndex: 2,
-          maxWidth: "420px",
-          marginBottom: "40px",
+          display: "flex",
+          flexDirection: "column",
+          justifyContent: "flex-end",   // push content to bottom
+          padding: "60px 8%",           // slightly tighter spacing
+          overflow: "hidden",
         }}
       >
+        {/* Background Image */}
         <div
           style={{
-            fontFamily: "var(--font-display)",
-            fontSize: 42,
-            fontWeight: 800,
-            letterSpacing: "-1px",
-            marginBottom: 12,
-            color: "white",
+            position: "absolute",
+            inset: 0,
+            backgroundImage: "url('/assets/Login_img.png')",
+            backgroundSize: "cover",
+            backgroundPosition: "center",
+            filter: "brightness(0.9)",   
           }}
-        >
-          GUILD<span style={{ color: "var(--accent)" }}>SPACE</span>
-        </div>
+        />
 
-        <p
+        {/* Overlay */}
+        <div
           style={{
-            fontSize: 20,
-            color: "rgba(255,255,255,0.75)",
-            lineHeight: 1.5,
+            position: "absolute",
+            inset: 0,
+            background: "rgba(10, 10, 20, 0.35)", 
+          }}
+        />
+
+        {/* Content (BOTTOM LEFT) */}
+        <div
+          style={{
+            position: "relative",
+            zIndex: 2,
+            maxWidth: "420px",
+            marginBottom: "40px",
           }}
         >
-          Find collaborators.<br />
-          Build together.
-        </p>
+          <div
+            style={{
+              fontFamily: "var(--font-display)",
+              fontSize: 42,
+              fontWeight: 800,
+              letterSpacing: "-1px",
+              marginBottom: 12,
+              color: "var(--text-primary)",
+            }}
+          >
+            GUILD<span style={{ color: "var(--accent)" }}>SPACE</span>
+          </div>
+
+          <p
+            style={{
+              fontSize: 20,
+              color: "rgba(255,255,255,0.75)",
+              lineHeight: 1.5,
+            }}
+          >
+            Find collaborators.<br />
+            Build together.
+          </p>
+        </div>
       </div>
-    </div>
+
 
       {/* ── RIGHT SIDE: Form ────────────────────────────────────────────── */}
-      <div
-  style={{
-    flex: 1,
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "center",
-    padding: "40px 24px",
-    background: "var(--bg)",
-  }}
->
+      <div style={{ flex: 1, display: "flex", alignItems: "center", justifyContent: "center", padding: "40px 24px" }}>
         <div style={{ width: "100%", maxWidth: 380 }}>
 
           {/* Card */}
@@ -180,7 +196,13 @@ export default function Login() {
 
             {/* ── LOGIN FORM ──────────────────────────────────────────────────── */}
             {tab === "login" && (
-              <form onSubmit={handleLogin} className="flex flex-col gap-12">
+              <form
+                onSubmit={(e) => {
+                  e.preventDefault();
+                  handleLogin(e);
+                }}
+                className="flex flex-col gap-12"
+              >
                 <div>
                   <label className="form-label">Email</label>
                   <input
@@ -194,7 +216,7 @@ export default function Login() {
                   <label className="form-label">Password</label>
                   <div style={{ position: "relative" }}>
                     <input
-                      type={showPassword ? "text" : "password"} required placeholder="••••••••"
+                      type={showPassword ? "text" : "password"} required placeholder="your password"
                       value={loginForm.password}
                       onChange={e => setLoginForm(f => ({ ...f, password: e.target.value }))}
                       style={{ paddingRight: 50 }}

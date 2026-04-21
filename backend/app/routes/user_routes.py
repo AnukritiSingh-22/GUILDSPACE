@@ -207,3 +207,36 @@ def update_skills(
 
     db.commit()
     return result
+
+import os
+import uuid
+from fastapi import UploadFile, File
+
+@router.post("/users/me/avatar")
+def upload_avatar(
+    file: UploadFile = File(...),
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db)
+):
+    if not file.content_type.startswith("image/"):
+        raise HTTPException(status_code=400, detail="File must be an image")
+    
+    content = file.file.read()
+    if len(content) > 5 * 1024 * 1024:
+        raise HTTPException(status_code=400, detail="File must be under 5MB")
+    
+    ext = file.filename.split(".")[-1] if "." in file.filename else "jpg"
+    filename = f"{uuid.uuid4()}.{ext}"
+    os.makedirs("static/avatars", exist_ok=True)
+    file_path = os.path.join("static/avatars", filename)
+    
+    with open(file_path, "wb") as f:
+        f.write(content)
+        
+    profile = current_user.profile
+    profile.avatar_url = f"/static/avatars/{filename}"
+    db.commit()
+    
+    return {"success": True, "avatar_url": profile.avatar_url}
+
+

@@ -24,7 +24,7 @@ function TrustRing({ value }) {
   const r = 26, cx = 34, cy = 34, circ = 2 * Math.PI * r, pct = value / 5;
   return (
     <svg width="68" height="68">
-      <circle cx={cx} cy={cy} r={r} fill="none" stroke="rgba(255,255,255,0.06)" strokeWidth={5} />
+      <circle cx={cx} cy={cy} r={r} fill="none" stroke="var(--border)" strokeWidth={5} />
       <circle cx={cx} cy={cy} r={r} fill="none" stroke="#7B5EA7"
         strokeWidth={5} strokeDasharray={`${pct * circ} ${circ}`}
         strokeDashoffset={circ * 0.25} strokeLinecap="round" />
@@ -104,8 +104,8 @@ export default function Home() {
     <div className="feed-layout page-enter">
       <style>{`
         .home-post-card {
-          background: #141414;
-          border: 1px solid rgba(255,255,255,0.06);
+          background: var(--bg-card);
+          border: 1px solid var(--border);
           border-radius: 16px;
           padding: 24px;
           margin-bottom: 20px;
@@ -133,7 +133,7 @@ export default function Home() {
       `}</style>
 
       {/* ── Left Sidebar ──────────────────────────────────────────── */}
-      <aside className="sidebar-left" style={{ background: "#0D0D0D", borderRight: "1px solid rgba(255,255,255,0.06)" }}>
+      <aside className="sidebar-left" style={{ background: "var(--bg)", borderRight: "1px solid var(--border)" }}>
         <div className="section-label" style={{ marginTop: 0 }}>Domain</div>
         {DOMAINS.map(d => {
           const active = domain === d;
@@ -142,7 +142,7 @@ export default function Home() {
               style={{
                 borderRadius: 24, padding: "8px 12px", marginBottom: 6, cursor: "pointer",
                 background: active ? "linear-gradient(135deg, rgba(123,94,167,0.2), rgba(155,111,212,0.2))" : "transparent",
-                color: active ? "#FFFFFF" : "var(--text-sec)",
+                color: active ? "var(--accent-mid)" : "var(--text-sec)",
                 border: active ? "1px solid rgba(155,111,212,0.3)" : "1px solid transparent",
                 display: "flex", alignItems: "center", gap: 8, fontSize: 13
               }}
@@ -229,13 +229,13 @@ export default function Home() {
                     setMenuOpenId(menuOpenId === post.id ? null : post.id);
                   }}
                   style={{
-                    width: 28, height: 28, background: "transparent", color: "#A0A0A0",
+                    width: 28, height: 28, background: "transparent", color: "var(--text-sec)",
                     border: "none", borderRadius: "50%", cursor: "pointer", fontSize: 18,
                     display: "flex", alignItems: "center", justifyContent: "center",
                     transition: "all 0.2s"
                   }}
-                  onMouseEnter={e => { e.currentTarget.style.background = "rgba(255,255,255,0.08)"; e.currentTarget.style.color = "white"; }}
-                  onMouseLeave={e => { e.currentTarget.style.background = "transparent"; e.currentTarget.style.color = "#A0A0A0"; }}
+                  onMouseEnter={e => { e.currentTarget.style.background = "var(--border)"; e.currentTarget.style.color = "white"; }}
+                  onMouseLeave={e => { e.currentTarget.style.background = "transparent"; e.currentTarget.style.color = "var(--text-sec)"; }}
                 >
                   ⋮
                 </button>
@@ -243,8 +243,8 @@ export default function Home() {
                   <div
                     onClick={e => e.stopPropagation()}
                     style={{
-                      position: "absolute", top: 36, right: 8, background: "#1A1A1A",
-                      border: "1px solid rgba(255,255,255,0.1)", borderRadius: 10,
+                      position: "absolute", top: 36, right: 8, background: "var(--bg-elevated)",
+                      border: "1px solid var(--border-mid)", borderRadius: 10,
                       boxShadow: "0 8px 24px rgba(0,0,0,0.4)", zIndex: 50,
                       minWidth: 140, padding: 4
                     }}
@@ -253,9 +253,9 @@ export default function Home() {
                       onClick={(e) => { e.stopPropagation(); navigate(`/edit-project/${post.id}`); }}
                       style={{
                         padding: "10px 16px", fontSize: 13, cursor: "pointer", borderRadius: 6,
-                        color: "white", display: "flex", alignItems: "center", gap: 8
+                        color: "var(--text-primary)", display: "flex", alignItems: "center", gap: 8
                       }}
-                      onMouseEnter={e => e.currentTarget.style.background = "rgba(255,255,255,0.06)"}
+                      onMouseEnter={e => e.currentTarget.style.background = "var(--border)"}
                       onMouseLeave={e => e.currentTarget.style.background = "transparent"}
                     >
                       <span style={{ fontSize: 14 }}>✏️</span> Edit post
@@ -264,21 +264,21 @@ export default function Home() {
                       onClick={(e) => handleHide(e, post.id)}
                       style={{
                         padding: "10px 16px", fontSize: 13, cursor: "pointer", borderRadius: 6,
-                        color: "white", display: "flex", alignItems: "center", gap: 8
+                        color: "var(--text-primary)", display: "flex", alignItems: "center", gap: 8
                       }}
-                      onMouseEnter={e => e.currentTarget.style.background = "rgba(255,255,255,0.06)"}
+                      onMouseEnter={e => e.currentTarget.style.background = "var(--border)"}
                       onMouseLeave={e => e.currentTarget.style.background = "transparent"}
                     >
                       <span style={{ fontSize: 14 }}>👁️‍🗨️</span> Hide post
                     </div>
-                    <div style={{ height: 1, background: "rgba(255,255,255,0.06)", margin: "4px 0" }} />
+                    <div style={{ height: 1, background: "var(--border)", margin: "4px 0" }} />
                     <div
                       onClick={(e) => handleDelete(e, post.id)}
                       style={{
                         padding: "10px 16px", fontSize: 13, cursor: "pointer", borderRadius: 6,
                         color: "#EF4444", display: "flex", alignItems: "center", gap: 8
                       }}
-                      onMouseEnter={e => e.currentTarget.style.background = "rgba(255,255,255,0.06)"}
+                      onMouseEnter={e => e.currentTarget.style.background = "var(--border)"}
                       onMouseLeave={e => e.currentTarget.style.background = "transparent"}
                     >
                       <span style={{ fontSize: 14 }}>🗑️</span> Delete post
@@ -302,12 +302,21 @@ export default function Home() {
             {/* Header */}
             <div className="proj-card-header" style={{ marginBottom: 16, paddingRight: post.ai_match > 0 ? 80 : 0 }}>
               <div className="flex items-center gap-8">
-                <div className="avatar" style={{
-                  width: 32, height: 32, fontSize: 12, flexShrink: 0,
-                  background: "var(--bg-elevated)", border: "1px solid var(--border-mid)",
-                  color: "var(--text-primary)",
-                }}>{post.poster_initials}</div>
-                <span style={{ fontSize: 14, fontWeight: 500, color: "var(--text-primary)" }}>{post.poster_name}</span>
+                <div 
+                  className="avatar" 
+                  style={{
+                    width: 32, height: 32, fontSize: 12, flexShrink: 0,
+                    background: "var(--bg-elevated)", border: "1px solid var(--border-mid)",
+                    color: "var(--text-primary)", cursor: "pointer"
+                  }}
+                  onClick={(e) => { e.stopPropagation(); navigate(`/user/${post.creator_id}`); }}
+                >{post.poster_initials}</div>
+                <span 
+                  style={{ fontSize: 14, fontWeight: 500, color: "var(--text-primary)", cursor: "pointer" }}
+                  onClick={(e) => { e.stopPropagation(); navigate(`/user/${post.creator_id}`); }}
+                  onMouseEnter={e => e.currentTarget.style.textDecoration = 'underline'}
+                  onMouseLeave={e => e.currentTarget.style.textDecoration = 'none'}
+                >{post.poster_name}</span>
                 <span style={{ fontSize: 11, padding: "2px 8px", background: "var(--bg-elevated)", borderRadius: 6, color: "var(--text-sec)" }}>
                   {post.domain}
                 </span>
@@ -333,7 +342,7 @@ export default function Home() {
               </div>
             </div>
 
-            <div style={{ height: 1, background: "rgba(255,255,255,0.06)", margin: "20px -24px" }} />
+            <div style={{ height: 1, background: "var(--border)", margin: "20px -24px" }} />
 
             <div className="proj-card-footer">
               <div className="proj-card-tags">
@@ -354,8 +363,8 @@ export default function Home() {
                 <button
                   style={{
                     padding: "6px 16px", borderRadius: 100, fontSize: 12, fontWeight: 500,
-                    background: "transparent", border: "1px solid rgba(255,255,255,0.15)",
-                    color: "#fff", cursor: (post.already_applied || !post.can_apply) ? "not-allowed" : "pointer",
+                    background: "transparent", border: "1px solid var(--border-bright)",
+                    color: "var(--text-primary)", cursor: (post.already_applied || !post.can_apply) ? "not-allowed" : "pointer",
                     opacity: (post.already_applied || !post.can_apply) ? 0.45 : 1, transition: "0.2s"
                   }}
                   disabled={post.already_applied || !post.can_apply}
@@ -377,9 +386,9 @@ export default function Home() {
       <div style={{ position: "fixed", bottom: 24, right: 24, zIndex: 9999, display: "flex", flexDirection: "column", gap: 10 }}>
         {toasts.map(t => (
           <div key={t.id} style={{
-            background: "#1A1A1A", border: "1px solid rgba(255,255,255,0.1)",
+            background: "var(--bg-elevated)", border: "1px solid var(--border-mid)",
             borderLeft: `4px solid ${t.type === 'success' ? '#10B981' : '#EF4444'}`,
-            borderRadius: 10, padding: "12px 16px", color: "white", fontSize: 13,
+            borderRadius: 10, padding: "12px 16px", color: "var(--text-primary)", fontSize: 13,
             boxShadow: "0 8px 24px rgba(0,0,0,0.4)"
           }}>
             {t.message}
@@ -388,9 +397,9 @@ export default function Home() {
       </div>
 
       {/* ── Right Panel ───────────────────────────────────────────── */}
-      <aside className="sidebar-right" style={{ background: "#0D0D0D", borderLeft: "1px solid rgba(255,255,255,0.06)" }}>
+      <aside className="sidebar-right" style={{ background: "var(--bg)", borderLeft: "1px solid var(--border)" }}>
         <div style={{ textAlign: "center", paddingBottom: 16,
-          borderBottom: "1px solid rgba(255,255,255,0.06)", marginBottom: 16 }}>
+          borderBottom: "1px solid var(--border)", marginBottom: 16 }}>
           <div className="avatar" style={{
             width: 46, height: 46, fontSize: 17, margin: "0 auto 8px",
             background: "rgba(155,111,212,0.1)", border: "1.5px solid rgba(155,111,212,0.3)",
@@ -411,10 +420,10 @@ export default function Home() {
         ].map(([k, v]) => (
           <div key={k} style={{ 
             display: "flex", justifyContent: "space-between", fontSize: 12, padding: "8px 0", 
-            borderBottom: "1px solid rgba(255,255,255,0.06)" 
+            borderBottom: "1px solid var(--border)" 
           }}>
             <span style={{ color: "var(--text-sec)" }}>{k}</span>
-            <span style={{ fontWeight: 500, color: "#fff" }}>{v}</span>
+            <span style={{ fontWeight: 500, color: "var(--text-primary)" }}>{v}</span>
           </div>
         ))}
       </aside>

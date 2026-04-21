@@ -1,4 +1,5 @@
 // src/App.js
+import React, { useState, useEffect } from "react";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import "./App.css";
 import { AuthProvider, useAuth } from "./context/AuthContext";
@@ -13,6 +14,7 @@ import Login           from "./pages/Login";
 import SearchPage      from "./pages/SearchPage";
 import Messages        from "./pages/Messages";
 import Notifications   from "./pages/Notifications";
+import { ThemeProvider } from "./context/ThemeContext";
 
 // ── Shows nothing while the auth check is in-flight ──────────────────────────
 function LoadingScreen() {
@@ -41,6 +43,17 @@ function PublicOnly({ children }) {
 }
 
 function AppRoutes() {
+  const [isDark, setIsDark] = useState(() => {
+    return localStorage.getItem("gs_theme") !== "light";
+  });
+
+  useEffect(() => {
+    document.documentElement.setAttribute("data-theme", isDark ? "dark" : "light");
+    localStorage.setItem("gs_theme", isDark ? "dark" : "light");
+  }, [isDark]);
+
+  const toggleTheme = () => setIsDark(d => !d);
+
   return (
     <BrowserRouter>
       <Routes>
@@ -53,7 +66,7 @@ function AppRoutes() {
         <Route path="/*" element={
           <Protected>
             <div style={{ minHeight: "100vh", background: "var(--bg)" }}>
-              <Navbar />
+              <Navbar onThemeToggle={toggleTheme} isDark={isDark} />
               <Routes>
                 <Route path="/"            element={<Home />} />
                 <Route path="/project/:id" element={<ProjectDetails />} />
@@ -78,8 +91,10 @@ function AppRoutes() {
 
 export default function App() {
   return (
-    <AuthProvider>
-      <AppRoutes />
-    </AuthProvider>
+    <ThemeProvider>
+      <AuthProvider>
+        <AppRoutes />
+      </AuthProvider>
+    </ThemeProvider>
   );
 }

@@ -1,3 +1,5 @@
+from tokenize import String
+
 from fastapi import APIRouter, Depends
 from sqlalchemy.orm import Session
 from sqlalchemy import or_, desc
@@ -67,11 +69,10 @@ def search_projects(q: str, db: Session = Depends(get_db), current_user: User = 
     query = db.query(Project).outerjoin(ProjectSkill, Project.id == ProjectSkill.project_id)\
                              .outerjoin(Skill, ProjectSkill.skill_id == Skill.id)\
                              .filter(
-                                 Project.status == "open",
                                  or_(
                                      Project.title.ilike(q_term),
                                      Project.description.ilike(q_term),
-                                     Project.domain.ilike(q_term),
+                                     Project.domain.cast(String).ilike(q_term),  
                                      Skill.name.ilike(q_term)
                                  )
                              ).distinct().order_by(desc(Project.created_at)).limit(20)
@@ -86,6 +87,7 @@ def search_projects(q: str, db: Session = Depends(get_db), current_user: User = 
         results.append({
             "id": p.id,
             "title": p.title,
+            "description": p.description,
             "domain": p.domain,
             "difficulty": p.difficulty,
             "min_trust": p.min_trust,

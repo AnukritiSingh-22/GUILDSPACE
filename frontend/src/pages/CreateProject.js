@@ -94,7 +94,7 @@ export default function CreateProject() {
   if (done) {
     return (
       <div style={{
-        minHeight: "100vh", background: "#0D0D0D", display: "flex", alignItems: "center", justifyContent: "center"
+        minHeight: "100vh", background: "var(--bg)", display: "flex", alignItems: "center", justifyContent: "center"
       }}>
         <div style={{ textAlign: "center", padding: 40 }}>
           <div style={{
@@ -102,7 +102,7 @@ export default function CreateProject() {
             border: "2px solid rgba(16,185,129,0.4)", display: "flex", alignItems: "center", justifyContent: "center",
             fontSize: 40, color: "#10B981", margin: "0 auto 24px", boxShadow: "0 0 40px rgba(16,185,129,0.2)"
           }}>✓</div>
-          <h2 style={{ fontFamily: "var(--font-display)", fontSize: 32, fontWeight: 800, color: "#fff", marginBottom: 12 }}>
+          <h2 style={{ fontFamily: "var(--font-display)", fontSize: 32, fontWeight: 800, color: "var(--text-primary)", marginBottom: 12 }}>
             {id ? "Project updated!" : "Project posted!"}
           </h2>
           <p style={{ fontSize: 14, color: "var(--text-sec)", marginBottom: 32 }}>
@@ -121,15 +121,15 @@ export default function CreateProject() {
 
   // ── Form ────────────────────────────────────────────────────────────────────
   return (
-    <div style={{ minHeight: "100vh", background: "#0D0D0D", padding: "40px 0" }}>
+    <div style={{ minHeight: "100vh", background: "var(--bg)", padding: "40px 0" }}>
       <style>{`
         .create-input {
           width: 100%;
-          background: #141414;
-          border: 1px solid rgba(255,255,255,0.08);
+          background: var(--bg-card);
+          border: 1px solid var(--border);
           border-radius: 12px;
           padding: 14px 16px;
-          color: white;
+          color: var(--text-primary);
           font-family: var(--font-body);
           font-size: 14px;
           outline: none;
@@ -146,8 +146,8 @@ export default function CreateProject() {
         }
         .applytype-card {
           flex: 1;
-          background: #141414;
-          border: 1px solid rgba(255,255,255,0.08);
+          background: var(--bg-card);
+          border: 1px solid var(--border);
           border-radius: 12px;
           padding: 16px;
           cursor: pointer;
@@ -162,7 +162,7 @@ export default function CreateProject() {
         }
         .divider {
           height: 1px;
-          background: rgba(255,255,255,0.06);
+          background: var(--border);
           margin: 32px 0;
         }
       `}</style>
@@ -176,7 +176,7 @@ export default function CreateProject() {
         </button>
 
         <div style={{ marginBottom: 40 }}>
-          <h2 style={{ fontFamily: "var(--font-display)", fontSize: 28, fontWeight: 800, color: "#fff", marginBottom: 8 }}>
+          <h2 style={{ fontFamily: "var(--font-display)", fontSize: 28, fontWeight: 800, color: "var(--text-primary)", marginBottom: 8 }}>
             {id ? "Edit your project" : "Post a collaboration"}
           </h2>
           <p style={{ fontSize: 14, color: "var(--text-sec)" }}>
@@ -274,7 +274,7 @@ export default function CreateProject() {
               { value: "questions", title: "Custom questions",  sub: "You define questions" },
             ].map(opt => (
               <div key={opt.value} className={`applytype-card ${form.applyType === opt.value ? "active" : ""}`} onClick={() => set("applyType", opt.value)}>
-                <div className="applytype-card-title" style={{ fontSize: 14, fontWeight: 600, color: "#fff", marginBottom: 4 }}>{opt.title}</div>
+                <div className="applytype-card-title" style={{ fontSize: 14, fontWeight: 600, color: "var(--text-primary)", marginBottom: 4 }}>{opt.title}</div>
                 <div style={{ fontSize: 12, color: "var(--text-sec)" }}>{opt.sub}</div>
               </div>
             ))}
@@ -323,7 +323,7 @@ export default function CreateProject() {
         {/* Submit */}
         <div style={{ display: "flex", gap: 16 }}>
           <button style={{
-            background: "rgba(255,255,255,0.08)", border: "none", borderRadius: 12, color: "#fff",
+            background: "var(--border)", border: "none", borderRadius: 12, color: "var(--text-primary)",
             padding: "14px 24px", fontSize: 14, fontWeight: 500, cursor: "pointer", transition: "0.2s"
           }} onClick={() => navigate("/")}>
             Cancel

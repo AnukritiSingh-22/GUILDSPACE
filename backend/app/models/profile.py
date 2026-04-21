@@ -27,6 +27,7 @@ class Profile(Base):
     college       = Column(String(150))
     bio           = Column(Text)
     interests     = Column(Text)
+    avatar_url    = Column(String(500))
 
     # Links
     github_url    = Column(String(255))

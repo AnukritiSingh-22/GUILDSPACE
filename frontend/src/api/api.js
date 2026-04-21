@@ -5,7 +5,8 @@
 // ─────────────────────────────────────────────────────────────────────────────
 
 const BASE = process.env.REACT_APP_API_URL || "http://localhost:8000";
-
+console.log("BASE URL:", BASE);
+console.log(process.env.REACT_APP_API_URL)
 // ── Token helpers ─────────────────────────────────────────────────────────────
 export const getToken  = ()        => localStorage.getItem("gs_token");
 export const setToken  = (token)   => localStorage.setItem("gs_token", token);
@@ -14,6 +15,7 @@ export const clearToken = ()       => localStorage.removeItem("gs_token");
 // ── Core fetch wrapper ────────────────────────────────────────────────────────
 async function request(path, options = {}) {
   const token = getToken();
+
   const headers = {
     "Content-Type": "application/json",
     ...(token ? { Authorization: `Bearer ${token}` } : {}),
@@ -22,21 +24,20 @@ async function request(path, options = {}) {
 
   const res = await fetch(`${BASE}${path}`, { ...options, headers });
 
-  // 401 → clear token so AuthContext can redirect to login
   if (res.status === 401) {
     clearToken();
-    window.location.href = "/login";
-    return;
+    throw new Error("Unauthorized");
   }
 
-  // 204 No Content
   if (res.status === 204) return null;
 
   const data = await res.json();
+
   if (!res.ok) {
     const msg = data?.detail || data?.message || "Request failed";
     throw new Error(typeof msg === "string" ? msg : JSON.stringify(msg));
   }
+
   return data;
 }
 
@@ -62,12 +63,35 @@ export async function signup({ email, password, full_name, role, city, college }
  * Returns JWT + user info.
  */
 export async function login({ email, password }) {
-  const data = await request("/api/auth/login", {
-    method: "POST",
-    body:   JSON.stringify({ email, password }),
-  });
-  setToken(data.access_token);
-  return data;
+  try {
+    const data = await request("/api/auth/login", {
+      method: "POST",
+      body: JSON.stringify({ email, password }),
+    });
+
+    // ✅ Only set token if valid
+    if (!data || !data.access_token) {
+      throw new Error("Invalid email or password");
+    }
+
+    setToken(data.access_token);
+    return data;
+
+  } catch (err) {
+    // ❌ DO NOT set token on failure
+    throw new Error(err.message || "Login failed");
+  }
+}
+
+
+export async function fetchMe() {
+  try {
+    return await request("/api/users/me");
+  } catch (err) {
+    // 🔥 If token invalid → clear it
+    clearToken();
+    throw err;
+  }
 }
 
 export function logout() {
@@ -79,9 +103,9 @@ export function logout() {
 // ═══════════════════════════════════════════════════════════════════════════════
 
 /** GET /api/users/me — full profile + skills */
-export async function fetchMe() {
-  return request("/api/users/me");
-}
+// export async function fetchMe() {
+//   return request("/api/users/me");
+// }
 
 /** PUT /api/users/me — update profile fields */
 export async function updateProfile(fields) {
@@ -194,6 +218,19 @@ export async function withdrawApplication(applicationId) {
 // AI FEED
 // ═══════════════════════════════════════════════════════════════════════════════
 
+export async function fetchAIInsight(prompt) {
+  return request("/api/ai/insight", {
+    method: "POST",
+    body: JSON.stringify({ prompt }),
+  });
+}
+
+export async function fetchProjectInsight(projectId) {
+  return request(`/api/ai/insight/project/${projectId}`);
+}
+export async function fetchApplicantInsight(applicationId) {
+  return request(`/api/ai/insight/application/${applicationId}`);
+}
 /** GET /api/ai/feed — AI-ranked personalised project feed */
 export async function fetchAiFeed({ domain, max_diff } = {}) {
   const params = new URLSearchParams();
@@ -292,4 +329,16 @@ export async function closeProject(projectId) {
 
 export async function completeProject(projectId) {
   return request(`/api/projects/${projectId}/complete`, { method: 'PUT' });
+}
+
+// ── Ratings ──────────────────────────────────────────────────────
+export async function submitRating(projectId, rateeId, stars, comment) {
+  return request("/api/ratings", {
+    method: "POST",
+    body: JSON.stringify({ project_id: projectId, ratee_id: rateeId, stars, comment }),
+  });
+}
+
+export async function fetchUserRatings(userId) {
+  return request(`/api/ratings/user/${userId}`);
 }

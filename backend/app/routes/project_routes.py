@@ -107,12 +107,17 @@ def list_projects(
     domain:     Optional[str] = Query(None),
     max_diff:   Optional[int] = Query(None, ge=1, le=10),
     skill:      Optional[str] = Query(None),
+    creator_id: Optional[str] = Query(None),
     page:       int           = Query(1, ge=1),
     page_size:  int           = Query(20, ge=1, le=100),
     db:         Session       = Depends(get_db),
     current_user: User        = Depends(get_current_user),
 ):
-    q = db.query(Project).filter(Project.status == "open")
+    q = db.query(Project)
+    if creator_id:
+        q = q.filter(Project.creator_id == creator_id)
+    else:
+        q = q.filter(Project.status == "open")
 
     if domain:
         q = q.filter(Project.domain == domain)
@@ -303,3 +308,4 @@ def complete_project(
     project.status = "completed"
     db.commit()
     return {"success": True, "status": "completed"}
+

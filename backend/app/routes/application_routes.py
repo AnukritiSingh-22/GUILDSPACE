@@ -25,7 +25,33 @@ from app.schemas.application import (
     ApplicationStatusUpdate, MyApplicationOut,
     ApplicationRateUpdate
 )
-from app.services.email_service import send_collaborator_email
+import os
+import smtplib
+from email.message import EmailMessage
+
+def _send_email(to_email: str, subject: str, html_body: str):
+    host = os.getenv("SMTP_HOST")
+    port = os.getenv("SMTP_PORT")
+    user = os.getenv("SMTP_USER")
+    password = os.getenv("SMTP_PASS")
+    from_email = os.getenv("FROM_EMAIL")
+
+    if not all([host, port, user, password, from_email]):
+        return
+
+    msg = EmailMessage()
+    msg["Subject"] = subject
+    msg["From"] = from_email
+    msg["To"] = to_email
+    msg.set_content(html_body, subtype="html")
+
+    try:
+        with smtplib.SMTP(host, int(port)) as server:
+            server.starttls()
+            server.login(user, password)
+            server.send_message(msg)
+    except Exception as e:
+        print(f"Failed to send email: {e}")
 from app.middleware.auth_middleware import get_current_user
 from app.services.ranking_service import compute_fit_score
 from app.utils.helpers import compute_trust_level
@@ -162,10 +188,12 @@ def my_applications(
 # ─────────────────────────────────────────────────────────────────────────────
 @router.get("/project/{project_id}", response_model=List[ApplicantOut])
 def get_applicants(
+    
     project_id:   UUID,
     current_user: User    = Depends(get_current_user),
     db:           Session = Depends(get_db),
 ):
+    print("🔥 NEW APPLICATION ROUTE HIT")
     project = db.query(Project).filter(Project.id == project_id).first()
     if not project:
         raise HTTPException(status_code=404, detail="Project not found")
@@ -181,6 +209,10 @@ def get_applicants(
     for app in apps:
         profile     = app.applicant.profile
         user_skills = _get_user_skill_names(app.applicant_id, db)
+        project_skills = [ps.skill.name for ps in project.skills]
+
+        matched_skills = [s for s in user_skills if s.lower() in [ps.lower() for ps in project_skills]]
+        missing_skills = [ps for ps in project_skills if ps.lower() not in [s.lower() for s in user_skills]]
 
         # Count completed projects for this user
         from app.models.project import ProjectStatusEnum
@@ -214,6 +246,8 @@ def get_applicants(
             "link":           app.link,
             "rating":         app.rating,
             "applied_at":     app.created_at,
+            "matched_skills": matched_skills,
+            "missing_skills": missing_skills,
         })
     return result
 
@@ -262,22 +296,33 @@ def update_application_status(
 
     # Send Notification and Email
     if payload.status != old_status:
-        notification_body = ""
-        if payload.status == "accepted":
-            notification_body = f"Congratulations! You were accepted for '{project.title}'. Please send your contact details in my DM."
-            send_collaborator_email(app.applicant.email if app.applicant else "unknown@mail.com", project.title)
-        elif payload.status == "rejected":
-            notification_body = f"Unfortunately, you were not selected for '{project.title}'."
+        applicant_email = app.applicant.email if app.applicant else ""
         
-        if notification_body:
+        if payload.status == "accepted":
             db.add(Notification(
                 user_id  = app.applicant_id,
-                type     = "application_update",
-                title    = f"Application {payload.status.capitalize()}",
-                body     = notification_body,
+                type     = "application_accepted",
+                title    = "🎉 Your application was accepted!",
+                body     = project.title,
                 link     = f"/project/{project.id}",
                 actor_id = current_user.id
             ))
+            if applicant_email:
+                html_body = f"<p>Congratulations! Your application for '{project.title}' was accepted!</p>"
+                _send_email(applicant_email, "Application Accepted!", html_body)
+                
+        elif payload.status == "rejected":
+            db.add(Notification(
+                user_id  = app.applicant_id,
+                type     = "application_rejected",
+                title    = "Application update",
+                body     = "Your application was not selected this time.",
+                link     = f"/project/{project.id}",
+                actor_id = current_user.id
+            ))
+            if applicant_email:
+                html_body = f"<p>Unfortunately, your application for '{project.title}' was not selected this time.</p>"
+                _send_email(applicant_email, "Application Update", html_body)
 
     db.commit()
     return {"success": True, "status": payload.status}
@@ -346,3 +391,4 @@ def withdraw_application(
         raise HTTPException(status_code=403, detail="Not your application")
     db.delete(app)
     db.commit()
+
