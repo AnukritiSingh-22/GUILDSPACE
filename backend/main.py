@@ -1,7 +1,11 @@
 # GuildSpace FastAPI application entry point.
 # Run with: uvicorn main:app --reload
 
+import sys
 import os
+
+sys.path.append(os.path.dirname(os.path.abspath(__file__)))
+
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
@@ -24,7 +28,10 @@ from app.routes.message_routes      import router as message_router
 from app.routes.rating_routes       import router as rating_router
 
 # Create tables
-Base.metadata.create_all(bind=engine)
+try:
+    Base.metadata.create_all(bind=engine)
+except Exception as e:
+    print("DB ERROR:", e)
 
 # Create app — only once
 app = FastAPI(
